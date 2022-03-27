@@ -1,7 +1,7 @@
 # ORB-SLAM3-Datasets-Preprocessing
 * At first you need to preprocess the dataset. You can do this by executing:
 ```
-python preproccesing.py PATH_TO_DEPTH_IMAGES_FOLDER PATH_TO_COLOR__IMAGES FOLDER PATH_TO_CONFIG_FILE_NAME
+python preproccesing.py DEPTH_IMAGES_FOLDER COLOR__IMAGES_FOLDER INI_CONFIG_FILE
 ```
 **WARNING**: You should have requirements installed for running script.
 
@@ -17,5 +17,5 @@ python associate.py PATH_TO_SEQUENCE/rgb.txt PATH_TO_SEQUENCE/depth.txt > associ
 
 * Now you can run ORB-SLAM3:
 ```
-./Examples/RGB-D/rgbd_tum Vocabulary/ORBvoc.txt PATH_TO_SETTINGS_YAML_FILE PATH_TO_SEQUENCE_FOLDER ASSOCIATIONS_FILE
+./Examples/RGB-D/rgbd_tum Vocabulary/ORBvoc.txt SETTINGS_YAML_FILE PATH_TO_SEQUENCE_FOLDER ASSOCIATIONS_FILE
 ```
