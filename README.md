@@ -3,6 +3,8 @@
 ```
 python preproccesing.py PATH_TO_DEPTH_IMAGES_FOLDER PATH_TO_COLOR__IMAGES FOLDER PATH_TO_CONFIG_FILE_NAME
 ```
+**WARNING**: You should have requirements installed for running script.
+
 Your preproccesed file will be in ```depth_preprocessed``` and ```color_preprocessed``` folders.
 
 * Then you can generate your own associations file executing:
