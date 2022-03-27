@@ -1,7 +1,7 @@
 # ORB-SLAM3-Datasets-Preprocessing
 * At first you need to preprocess the dataset. You can do this by executing:
 ```
-python preproccesing.py DEPTH_IMAGES_FOLDER COLOR__IMAGES_FOLDER INI_CONFIG_FILE
+python preproccesing.py DEPTH_IMAGES_FOLDER COLOR_IMAGES_FOLDER INI_CONFIG_FILE
 ```
 **WARNING**: You should have requirements installed for running script.
 
