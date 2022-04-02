@@ -58,16 +58,20 @@ def reprojection(
     )
 
     result = color_matrix @ points.T
-    result[0] /= result[2]
-    result[1] /= result[2]
+    result[:2] /= result[2]
     result[2] *= 1000
     result = np.round(result).astype(int)
     w, h = shape
+    result = result[
+        :, (result[0] >= 0) & (result[0] < w) & (result[1] >= 0) & (result[1] < h)
+    ]
     img = np.zeros((h, w)).astype(np.uint16)
-    for point in result.T:
+
+    def f(point):
         u, v, z, _ = point
-        if 0 <= v < h and 0 <= u < w:
-            img[v, u] = z
+        img[v, u] = z
+
+    np.apply_along_axis(f, 0, result)
     return img
 
 
@@ -95,9 +99,8 @@ def depth_images_preprocessing(
     new_dir = os.path.join(os.path.dirname(depth_images_path), "depth_preprocessed")
     if not os.path.isdir(new_dir):
         os.mkdir(new_dir)
-    color_matrix = np.array(color_matrix)
-    color_matrix = np.concatenate((color_matrix, np.zeros((3, 1))), axis=1)
-    color_matrix = np.concatenate((color_matrix, np.array([[0, 0, 0, 1]])), axis=0)
+    ext_color_matrix = np.eye(4)
+    ext_color_matrix[:3, :3] = color_matrix
     intrinsic = open3d.camera.PinholeCameraIntrinsic()
     intrinsic.width, intrinsic.height = shape_depth
     for image in depth_images:
@@ -110,7 +113,7 @@ def depth_images_preprocessing(
             undist_intrinsics,
             intrinsic,
             transform_matrix,
-            color_matrix,
+            ext_color_matrix,
             shape_color,
         )
         imageio.imwrite(os.path.join(new_dir, image), img)
@@ -130,7 +133,7 @@ def color_images_preprocessing(color_images_path, camera_matrix, dist_coeff):
 
     for image in color_images:
         color_undistorted, _ = undistort(
-            os.path.join(color_images_path, image), np.array(camera_matrix), dist_coeff
+            os.path.join(color_images_path, image), camera_matrix, dist_coeff
         )
         imageio.imwrite(os.path.join(new_dir, image), color_undistorted)
 
@@ -176,7 +179,9 @@ if __name__ == "__main__":
         depth_shape,
         color_shape,
         transform,
-        color_camera_matrix,
+        np.array(color_camera_matrix),
     )
 
-    color_images_preprocessing(args.color_images, color_camera_matrix, color_dist_coeff)
+    color_images_preprocessing(
+        args.color_images, np.array(color_camera_matrix), color_dist_coeff
+    )
