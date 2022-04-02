@@ -5,6 +5,8 @@ python preproccesing.py DEPTH_IMAGES_FOLDER COLOR_IMAGES_FOLDER INI_CONFIG_FILE
 ```
 **WARNING**: You should have requirements installed for running script.
 
+*NOTE*: You should specify config.ini file before running script. There is example of this file in the repository.
+
 Your preproccesed files will be in ```depth_preprocessed``` and ```color_preprocessed``` folders.
 
 * Then you can generate your own associations file executing:

@@ -21,7 +21,7 @@ def associate(
     color_images: dict, depth_images: dict, offset: float, max_difference: float
 ) -> list:
     """
-    Associate color and depth images
+    Associates color and depth images
     :param color_images: (timestamp, path) KVP for color images
     :param depth_images: (timestamp, path) KVP for depth images
     :param offset: time offset added to the timestamps of the depth images
@@ -32,9 +32,9 @@ def associate(
     second_keys = np.asarray(list(depth_images.keys()))
     best_matches = list()
     for timestamp in first_keys:
-        best_match = np.argmin(np.abs(second_keys + offset - timestamp))
-        if best_match < max_difference:
-            best_matches.append((timestamp, second_keys[best_match]))
+        best_match = second_keys[np.argmin(np.abs(second_keys + offset - timestamp))]
+        if abs(best_match + offset - timestamp) < max_difference:
+            best_matches.append((timestamp, best_match))
     return sorted(best_matches)
 
 
@@ -48,16 +48,19 @@ if __name__ == "__main__":
     parser.add_argument("depth_folder", help="path to folder with depth images")
     parser.add_argument(
         "--offset",
+        type=float,
         help="time offset added to the timestamps of the depth images (default: 0.0)",
         default=0.0,
     )
     parser.add_argument(
         "--max_difference",
+        type=float,
         help="maximally allowed time difference for matching entries (default: 1000)",
         default=1000,
     )
     parser.add_argument(
         "--timestamp2sec",
+        type=float,
         help="constant for performing the conversion to sec (default: 1e6)",
         default=1e6,
     )
@@ -66,14 +69,12 @@ if __name__ == "__main__":
     first_list = read_folder(args.color_folder)
     second_list = read_folder(args.depth_folder)
 
-    matches = associate(
-        first_list, second_list, float(args.offset), float(args.max_difference)
-    )
+    matches = associate(first_list, second_list, args.offset, args.max_difference)
 
     for a, b in matches:
         print(
-            a / float(args.timestamp2sec),
+            a / args.timestamp2sec,
             first_list[a],
-            b / float(args.timestamp2sec),
+            b / args.timestamp2sec,
             second_list[b],
         )
