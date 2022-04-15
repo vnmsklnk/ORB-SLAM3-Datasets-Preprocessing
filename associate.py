@@ -13,8 +13,8 @@ def read_folder(path_to_folder: str) -> dict[float, str]:
     files = os.listdir(path_to_folder)
     timestamps = [float(Path(file).stem) for file in files]
     files = [os.path.join(path_to_folder, x) for x in files]
-    d = dict(zip(timestamps, files))
-    return d
+    dic = dict(zip(timestamps, files))
+    return dic
 
 
 def associate(
@@ -44,8 +44,14 @@ if __name__ == "__main__":
     This script takes two data files with timestamps and associates them   
     """
     )
-    parser.add_argument("color_folder", help="path to folder with color images")
-    parser.add_argument("depth_folder", help="path to folder with depth images")
+    parser.add_argument(
+        "color_folder_M", help="path to folder with master color images"
+    )
+    parser.add_argument(
+        "depth_folder_M", help="path to folder with master depth images"
+    )
+    parser.add_argument("color_folder_S", help="path to folder with slave color images")
+    parser.add_argument("depth_folder_S", help="path to folder with slave depth images")
     parser.add_argument(
         "--offset",
         type=float,
@@ -66,15 +72,22 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    first_list = read_folder(args.color_folder)
-    second_list = read_folder(args.depth_folder)
+    first_list_M = read_folder(args.color_folder_M)
+    second_list_M = read_folder(args.depth_folder_M)
 
-    matches = associate(first_list, second_list, args.offset, args.max_difference)
+    matches_M = associate(first_list_M, second_list_M, args.offset, args.max_difference)
 
-    for a, b in matches:
+    first_list_S = read_folder(args.color_folder_S)
+    second_list_S = read_folder(args.depth_folder_S)
+
+    matches_S = associate(first_list_S, second_list_S, args.offset, args.max_difference)
+
+    for (a, b), (c, d) in zip(matches_M, matches_S):
         print(
             a / args.timestamp2sec,
-            first_list[a],
+            first_list_M[a],
             b / args.timestamp2sec,
-            second_list[b],
+            second_list_M[b],
+            first_list_S[c],
+            second_list_S[d],
         )
