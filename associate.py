@@ -13,8 +13,8 @@ def read_folder(path_to_folder: str) -> dict[float, str]:
     files = os.listdir(path_to_folder)
     timestamps = [float(Path(file).stem) for file in files]
     files = [os.path.join(path_to_folder, x) for x in files]
-    dic = dict(zip(timestamps, files))
-    return dic
+    timestamp_image_kvp = dict(zip(timestamps, files))
+    return timestamp_image_kvp
 
 
 def associate(

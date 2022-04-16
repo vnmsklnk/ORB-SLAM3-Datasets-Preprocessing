@@ -76,7 +76,7 @@ def reprojection(
 
 
 def depth_images_preprocessing(
-    depth_images_path,
+    dataset_path,
     depth_matrix,
     dist_coeff,
     shape_depth,
@@ -87,17 +87,18 @@ def depth_images_preprocessing(
 ):
     """
     Preprocesses depth images. Preprocessing includes undistorting and reprojection.
-    :param folder_name: folder name for saving results of preprocessing
-    :param depth_images_path: path to depth images
+    :param dataset_path: path to dataset with images
     :param depth_matrix: depth camera's intrinsics
     :param dist_coeff: list of k1, k2, p1, p2, k3, k4, k5, k6 coefficients
     :param shape_depth: shape of depth images
     :param shape_color: shape of color images
     :param transform_matrix: transformation matrix from one coordinate system to another
     :param color_matrix: color camera's intrinsics
+    :param folder_name: folder name for saving results of preprocessing
     """
-    depth_images = os.listdir(depth_images_path)
-    new_dir = os.path.join(os.path.dirname(depth_images_path), folder_name)
+    depth_images_folder = os.path.join(dataset_path, "depth")
+    depth_images = os.listdir(depth_images_folder)
+    new_dir = os.path.join(dataset_path, folder_name)
     if not os.path.isdir(new_dir):
         os.mkdir(new_dir)
     ext_color_matrix = np.eye(4)
@@ -106,7 +107,7 @@ def depth_images_preprocessing(
     intrinsic.width, intrinsic.height = shape_depth
     for image in depth_images:
         depth_undistorted, undist_intrinsics = undistort(
-            os.path.join(depth_images_path, image), np.array(depth_matrix), dist_coeff
+            os.path.join(depth_images_folder, image), np.array(depth_matrix), dist_coeff
         )
 
         img = reprojection(
@@ -120,34 +121,32 @@ def depth_images_preprocessing(
         imageio.imwrite(os.path.join(new_dir, image), img)
 
 
-def color_images_preprocessing(
-    color_images_path, camera_matrix, dist_coeff, folder_name
-):
+def color_images_preprocessing(dataset_path, camera_matrix, dist_coeff, folder_name):
     """
     Undistorts color images
-    :param folder_name: folder name for saving results of preprocessing
-    :param color_images_path: path to color images
+    :param dataset_path: path to dataset with images
     :param camera_matrix: color camera's intrinsics
     :param dist_coeff: list of k1, k2, p1, p2, k3, k4, k5, k6 coefficients
+    :param folder_name: folder name for saving results of preprocessing
     """
-    color_images = os.listdir(color_images_path)
-    new_dir = os.path.join(os.path.dirname(color_images_path), folder_name)
+    color_images_folder = os.path.join(dataset_path, "color")
+    color_images = os.listdir(color_images_folder)
+    new_dir = os.path.join(dataset_path, folder_name)
     if not os.path.isdir(new_dir):
         os.mkdir(new_dir)
 
     for image in color_images:
         color_undistorted, _ = undistort(
-            os.path.join(color_images_path, image), camera_matrix, dist_coeff
+            os.path.join(color_images_folder, image), camera_matrix, dist_coeff
         )
         imageio.imwrite(os.path.join(new_dir, image), color_undistorted)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("depth_master_images")
-    parser.add_argument("color_master_images")
-    parser.add_argument("depth_slave_images")
-    parser.add_argument("color_slave_images")
+    parser.add_argument("path_to_folder")
+    parser.add_argument("path_to_save_color")
+    parser.add_argument("path_to_save_depth")
     parser.add_argument("config_path")
 
     args = parser.parse_args()
@@ -172,65 +171,26 @@ if __name__ == "__main__":
         ]
         return np.asarray(dist_coeff), camera_matrix
 
-    depth_slave_dist_coeff, depth_slave_camera_matrix = get_intrinsics(
-        config["DEPTH_SLAVE"]
-    )
-    depth_master_dist_coeff, depth_master_camera_matrix = get_intrinsics(
-        config["DEPTH_MASTER"]
-    )
-    color_slave_dist_coeff, color_slave_camera_matrix = get_intrinsics(
-        config["COLOR_SLAVE"]
-    )
-    color_master_dist_coeff, color_master_camera_matrix = get_intrinsics(
-        config["COLOR_MASTER"]
-    )
-    depth_slave_shape = int(config["DEPTH_SLAVE"]["width"]), int(
-        config["DEPTH_SLAVE"]["height"]
-    )
-    color_slave_shape = int(config["COLOR_SLAVE"]["width"]), int(
-        config["COLOR_SLAVE"]["height"]
-    )
-    depth_master_shape = int(config["DEPTH_MASTER"]["width"]), int(
-        config["DEPTH_MASTER"]["height"]
-    )
-    color_master_shape = int(config["COLOR_MASTER"]["width"]), int(
-        config["COLOR_MASTER"]["height"]
-    )
-    transform_T1 = np.array(json.loads(config["TRANSFORM"]["T1"]))
-    transform_T2 = np.array(json.loads(config["TRANSFORM"]["T2"]))
+    depth_dist_coeff, depth_camera_matrix = get_intrinsics(config["DEPTH"])
+    color_dist_coeff, color_camera_matrix = get_intrinsics(config["COLOR"])
+    depth_shape = int(config["DEPTH"]["width"]), int(config["DEPTH"]["height"])
+    color_shape = int(config["COLOR"]["width"]), int(config["COLOR"]["height"])
+    transform = np.array(json.loads(config["TRANSFORM"]["matrix"]))
 
     depth_images_preprocessing(
-        args.depth_slave_images,
-        depth_slave_camera_matrix,
-        depth_slave_dist_coeff,
-        depth_slave_shape,
-        color_slave_shape,
-        transform_T2,
-        np.array(color_slave_camera_matrix),
-        "depth_slave_preprocessed",
-    )
-
-    depth_images_preprocessing(
-        args.depth_master_images,
-        depth_master_camera_matrix,
-        depth_master_dist_coeff,
-        depth_master_shape,
-        color_master_shape,
-        transform_T1,
-        np.array(color_master_camera_matrix),
-        "depth_master_preprocessed",
+        args.path_to_folder,
+        depth_camera_matrix,
+        depth_dist_coeff,
+        depth_shape,
+        color_shape,
+        transform,
+        np.array(color_camera_matrix),
+        args.path_to_save_depth,
     )
 
     color_images_preprocessing(
-        args.color_slave_images,
-        np.array(color_slave_camera_matrix),
-        color_slave_dist_coeff,
-        "color_slave_preprocessed",
-    )
-
-    color_images_preprocessing(
-        args.color_master_images,
-        np.array(color_master_camera_matrix),
-        color_master_dist_coeff,
-        "color_master_preprocessed",
+        args.path_to_folder,
+        np.array(color_camera_matrix),
+        color_dist_coeff,
+        args.path_to_save_color,
     )
