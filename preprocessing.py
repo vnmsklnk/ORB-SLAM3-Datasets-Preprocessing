@@ -76,27 +76,29 @@ def reprojection(
 
 
 def depth_images_preprocessing(
-    depth_images_path,
+    dataset_path,
     depth_matrix,
     dist_coeff,
     shape_depth,
     shape_color,
     transform_matrix,
     color_matrix,
+    folder_name,
 ):
     """
     Preprocesses depth images. Preprocessing includes undistorting and reprojection.
-    Saves result to "depth_preprocessed" folder.
-    :param depth_images_path: path to depth images
+    :param dataset_path: path to dataset with images
     :param depth_matrix: depth camera's intrinsics
     :param dist_coeff: list of k1, k2, p1, p2, k3, k4, k5, k6 coefficients
     :param shape_depth: shape of depth images
     :param shape_color: shape of color images
     :param transform_matrix: transformation matrix from one coordinate system to another
     :param color_matrix: color camera's intrinsics
+    :param folder_name: folder name for saving results of preprocessing
     """
-    depth_images = os.listdir(depth_images_path)
-    new_dir = os.path.join(os.path.dirname(depth_images_path), "depth_preprocessed")
+    depth_images_folder = os.path.join(dataset_path, "depth")
+    depth_images = os.listdir(depth_images_folder)
+    new_dir = os.path.join(dataset_path, folder_name)
     if not os.path.isdir(new_dir):
         os.mkdir(new_dir)
     ext_color_matrix = np.eye(4)
@@ -105,7 +107,7 @@ def depth_images_preprocessing(
     intrinsic.width, intrinsic.height = shape_depth
     for image in depth_images:
         depth_undistorted, undist_intrinsics = undistort(
-            os.path.join(depth_images_path, image), np.array(depth_matrix), dist_coeff
+            os.path.join(depth_images_folder, image), np.array(depth_matrix), dist_coeff
         )
 
         img = reprojection(
@@ -119,29 +121,32 @@ def depth_images_preprocessing(
         imageio.imwrite(os.path.join(new_dir, image), img)
 
 
-def color_images_preprocessing(color_images_path, camera_matrix, dist_coeff):
+def color_images_preprocessing(dataset_path, camera_matrix, dist_coeff, folder_name):
     """
-    Undistorts color images and saves then to "color_preprocessed" folder
-    :param color_images_path: path to color images
+    Undistorts color images
+    :param dataset_path: path to dataset with images
     :param camera_matrix: color camera's intrinsics
     :param dist_coeff: list of k1, k2, p1, p2, k3, k4, k5, k6 coefficients
+    :param folder_name: folder name for saving results of preprocessing
     """
-    color_images = os.listdir(color_images_path)
-    new_dir = os.path.join(os.path.dirname(color_images_path), "color_preprocessed")
+    color_images_folder = os.path.join(dataset_path, "color")
+    color_images = os.listdir(color_images_folder)
+    new_dir = os.path.join(dataset_path, folder_name)
     if not os.path.isdir(new_dir):
         os.mkdir(new_dir)
 
     for image in color_images:
         color_undistorted, _ = undistort(
-            os.path.join(color_images_path, image), camera_matrix, dist_coeff
+            os.path.join(color_images_folder, image), camera_matrix, dist_coeff
         )
         imageio.imwrite(os.path.join(new_dir, image), color_undistorted)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("depth_images")
-    parser.add_argument("color_images")
+    parser.add_argument("path_to_folder")
+    parser.add_argument("path_to_save_color")
+    parser.add_argument("path_to_save_depth")
     parser.add_argument("config_path")
 
     args = parser.parse_args()
@@ -173,15 +178,19 @@ if __name__ == "__main__":
     transform = np.array(json.loads(config["TRANSFORM"]["matrix"]))
 
     depth_images_preprocessing(
-        args.depth_images,
+        args.path_to_folder,
         depth_camera_matrix,
         depth_dist_coeff,
         depth_shape,
         color_shape,
         transform,
         np.array(color_camera_matrix),
+        args.path_to_save_depth,
     )
 
     color_images_preprocessing(
-        args.color_images, np.array(color_camera_matrix), color_dist_coeff
+        args.path_to_folder,
+        np.array(color_camera_matrix),
+        color_dist_coeff,
+        args.path_to_save_color,
     )
