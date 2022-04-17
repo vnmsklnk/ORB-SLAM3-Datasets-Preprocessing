@@ -7,7 +7,7 @@ python preprocessing.py PATH_TO_DATASET PATH_TO_SAVE_COLOR PATH_TO_SAVE_DEPTH IN
 
 *NOTE*: You should specify config.ini file before running script. There are examples of this file for master and slave cameras in the repository.
 
-*NOTE*: You should have `color` and `color` folders in dataset.
+*NOTE*: You should have `color` and `depth` folders in dataset.
 
 * Then you can generate your own associations file executing:
 ```
