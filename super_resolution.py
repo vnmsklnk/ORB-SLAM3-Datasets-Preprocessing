@@ -38,7 +38,7 @@ if __name__ == "__main__":
                     cropped = image_copy[j - n1 : j + n2, i - n1 : i + n2]
                     non_zero = np.count_nonzero(cropped)
                     if non_zero > condition:
-                        image[j][i] = np.average(
+                        image[j][i] = np.median(
                             cropped.ravel()[np.flatnonzero(cropped)]
                         )
 
