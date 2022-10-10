@@ -1,11 +1,14 @@
 import json
 import os
 import argparse
+import time
+
 import cv2
 import numpy as np
 import open3d
 import configparser
 import imageio
+from tqdm import tqdm
 
 
 def undistort(path, camera_matrix, dist_coeff):
@@ -105,7 +108,7 @@ def depth_images_preprocessing(
     ext_color_matrix[:3, :3] = color_matrix
     intrinsic = open3d.camera.PinholeCameraIntrinsic()
     intrinsic.width, intrinsic.height = shape_depth
-    for image in depth_images:
+    for image in tqdm(depth_images):
         depth_undistorted, undist_intrinsics = undistort(
             os.path.join(depth_images_folder, image), np.array(depth_matrix), dist_coeff
         )
@@ -118,7 +121,7 @@ def depth_images_preprocessing(
             ext_color_matrix,
             shape_color,
         )
-        imageio.imwrite(os.path.join(new_dir, image), img)
+        cv2.imwrite(os.path.join(new_dir, image), img)
 
 
 def color_images_preprocessing(dataset_path, camera_matrix, dist_coeff, folder_name):
@@ -135,11 +138,12 @@ def color_images_preprocessing(dataset_path, camera_matrix, dist_coeff, folder_n
     if not os.path.isdir(new_dir):
         os.mkdir(new_dir)
 
-    for image in color_images:
+    for image in tqdm(color_images):
         color_undistorted, _ = undistort(
             os.path.join(color_images_folder, image), camera_matrix, dist_coeff
         )
-        imageio.imwrite(os.path.join(new_dir, image), color_undistorted)
+        cv2.imwrite(os.path.join(new_dir, image), color_undistorted)
+
 
 
 if __name__ == "__main__":
@@ -152,6 +156,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     config = configparser.ConfigParser()
     config.read(args.config_path)
+    config.read('config.ini')
 
     def get_intrinsics(settings):
         dist_coeff = [
