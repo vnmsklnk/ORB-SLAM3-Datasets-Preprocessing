@@ -5,7 +5,7 @@ python preprocessing.py PATH_TO_DATASET PATH_TO_SAVE_COLOR PATH_TO_SAVE_DEPTH IN
 ```
 **WARNING**: You should have requirements installed for running script.
 
-*NOTE*: You should specify `preprocessing_config.ini` file before running script. There are example of this file in the repository.
+*NOTE*: You should specify `preprocessing_config.ini` file before running script. There is example of this file in the repository.
 
 *NOTE*: You should have `color` and `depth` folders in dataset.
 
