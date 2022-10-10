@@ -155,7 +155,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     config = configparser.ConfigParser()
     config.read(args.config_path)
-    config.read('config.ini')
 
     def get_intrinsics(settings):
         dist_coeff = [
