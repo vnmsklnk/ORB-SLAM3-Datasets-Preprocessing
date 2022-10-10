@@ -28,4 +28,4 @@ For two-view:
 ```
 ./Examples/RGB-D-Two-View/rgbd_tum_tw Vocabulary/ORBvoc.txt SETTINGS_YAML_FILE PATH_TO_SEQUENCE_FOLDER ASSOCIATIONS_FILE
 ```
-*NOTE*: The repository already has a yaml configuration file example. All `Slave` parameters and `TransformationMatrix` don't matter in the case of one-view version.
+*NOTE*: The repository already has a yaml configuration file example. All `Slave` parameters and `TransformationMatrix` don't affect anything in the case of one-view version.
