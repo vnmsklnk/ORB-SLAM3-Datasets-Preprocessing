@@ -6,24 +6,24 @@
 Camera.type: "PinHole"
 
 # Camera calibration and distortion parameters (OpenCV) 
-Camera.fx: 599.6294555664063
-Camera.fy: 599.201904296875
-Camera.cx: 638.3807373046875
-Camera.cy: 365.59857177734375
+Camera.fx: 916.5760498046875
+Camera.fy: 916.145751953125
+Camera.cx: 957.8717041015625
+Camera.cy: 552.1826782226562
 
-Camera.fxS: 611.0506591796875
-Camera.fyS: 610.7638549804688
-Camera.cxS: 638.4144897460938
-Camera.cyS: 367.95513916015625
+Camera.fxSlave: 0.0
+Camera.fySlave: 0.0
+Camera.cxSlave: 0.0
+Camera.cySlave: 0.0
 
 TransformationMatrix: !!opencv-matrix
    rows: 4
    cols: 4
    dt: f
-   data: [0.999328193011421, 0.0016391028617647092, 0.03661251144536501, -0.17252133916009485,
-          -0.0014382636000597208, 0.9999837788991909, -0.005511200986342432, -0.002297427236994498,
-         -0.036620950975434434, 0.005454840080485543, 0.999314340270043, -3.7728083714161365e-05,
-         0, 0, 0, 1]
+   data: [1.0, 0.0, 0.0, 0.0,
+          0.0, 1.0, 0.0, 0.0,
+          0.0, 0.0, 1.0, 0.0,
+          0.0, 0.0, 0.0, 1.0]
 
 
 Camera.k1: 0.0
@@ -32,11 +32,11 @@ Camera.p1: 0.0
 Camera.p2: 0.0
 Camera.k3: 0.0
 
-Camera.width: 1280
-Camera.height: 720
+Camera.width: 1920
+Camera.height: 1080
 
 # Camera frames per second 
-Camera.fps: 5.0
+Camera.fps: 15.0
 
 # IR projector baseline times fx (aprox.)
 Camera.bf: 40.0
@@ -48,14 +48,14 @@ Camera.RGB: 1
 ThDepth: 40.0
 
 # Deptmap values factor 
-DepthMapFactor: 1000.0
+DepthMapFactor: 5000.0
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
 #--------------------------------------------------------------------------------------------
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 1000
+ORBextractor.nFeatures: 3000
 
 # ORB Extractor: Scale factor between levels in the scale pyramid 	
 ORBextractor.scaleFactor: 1.2
