@@ -75,7 +75,6 @@ if __name__ == "__main__":
 
     matches = associate(first_list, second_list, args.offset, args.max_difference)
 
-
     for (a, b), (c, d) in matches:
         print(
             a / args.timestamp2sec,
