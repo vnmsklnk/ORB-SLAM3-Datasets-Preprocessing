@@ -1,4 +1,4 @@
-imageio==2.16.1
 numpy==1.22.3
 open3d==0.15.2
 opencv_python==4.5.5.64
+tqdm==4.64.0
