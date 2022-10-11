@@ -6,7 +6,6 @@ import cv2
 import numpy as np
 import open3d
 import configparser
-import imageio
 from tqdm import tqdm
 
 
