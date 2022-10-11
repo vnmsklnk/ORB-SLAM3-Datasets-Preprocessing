@@ -1,10 +1,12 @@
 import argparse
 import os
 from pathlib import Path
+from typing import Dict
+
 import numpy as np
 
 
-def read_folder(path_to_folder: str) -> dict[float, str]:
+def read_folder(path_to_folder: str) -> Dict[float, str]:
     """
     Reads all images' paths and timestamps from folder
     :param path_to_folder: path to folder to read
@@ -18,7 +20,7 @@ def read_folder(path_to_folder: str) -> dict[float, str]:
 
 
 def associate(
-    color_images: dict, depth_images: dict, offset: float, max_difference: float
+    color_images: Dict, depth_images: Dict, offset: float, max_difference: float
 ) -> list:
     """
     Associates color and depth images
