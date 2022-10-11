@@ -11,10 +11,10 @@ python preprocessing.py PATH_TO_DATASET PATH_TO_SAVE_COLOR PATH_TO_SAVE_DEPTH IN
 
 * Then you can generate your own associations file for one-view or two-view cases:
 ```
-python associate_one_view.py PATH_TO_RGB PATH_TO_DEPTH > associations.txt
+python associate_one_view.py RGB_DIR DEPTH_DIR > associations.txt
 ```
 ```
-python associate_two_view.py PATH_TO_RGB_MASTER PATH_TO_DEPTH_MASTER PATH_TO_RGB_SLAVE PATH_TO_DEPTH_SLAVE > associations.txt
+python associate_two_view.py RGB_MASTER_DIR DEPTH_MASTER_DIR RGB_SLAVE_DIR DEPTH_SLAVE_DIR > associations.txt
 ```
 
 *NOTE*: You can specify max_difference and timestamp2sec parameters. By default they equals 1000 microseconds and 1e6 accordingly.
