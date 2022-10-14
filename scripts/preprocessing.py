@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 import open3d
 import configparser
+
 from tqdm import tqdm
 
 
@@ -136,12 +137,17 @@ def color_images_preprocessing(dataset_path, camera_matrix, dist_coeff, folder_n
     if not os.path.isdir(new_dir):
         os.mkdir(new_dir)
 
+    new_color_intrinsics = None
     for image in tqdm(color_images):
-        color_undistorted, _ = undistort(
+        color_undistorted, new_color_intrinsics = undistort(
             os.path.join(color_images_folder, image), camera_matrix, dist_coeff
         )
         cv2.imwrite(os.path.join(new_dir, image), color_undistorted)
 
+    if new_color_intrinsics is None:
+        new_color_intrinsics = camera_matrix
+
+    return new_color_intrinsics
 
 
 if __name__ == "__main__":
@@ -179,6 +185,13 @@ if __name__ == "__main__":
     color_shape = int(config["COLOR"]["width"]), int(config["COLOR"]["height"])
     transform = np.array(json.loads(config["TRANSFORM"]["matrix"]))
 
+    new_color_intrinsics_mtx = color_images_preprocessing(
+        args.path_to_folder,
+        np.array(color_camera_matrix),
+        color_dist_coeff,
+        args.path_to_save_color,
+    )
+
     depth_images_preprocessing(
         args.path_to_folder,
         depth_camera_matrix,
@@ -186,13 +199,6 @@ if __name__ == "__main__":
         depth_shape,
         color_shape,
         transform,
-        np.array(color_camera_matrix),
+        new_color_intrinsics_mtx,
         args.path_to_save_depth,
-    )
-
-    color_images_preprocessing(
-        args.path_to_folder,
-        np.array(color_camera_matrix),
-        color_dist_coeff,
-        args.path_to_save_color,
     )
